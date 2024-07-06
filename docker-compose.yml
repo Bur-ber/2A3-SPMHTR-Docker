@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-server
+    environment:
+      MYSQL_ROOT_PASSWORD: spmhtrpwd
+      MYSQL_DATABASE: spmhtr_database
+      MYSQL_USER: spmhtr
+      MYSQL_PASSWORD: spmhtrpwd
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init_db.sql:/docker-entrypoint-initdb.d/init_db.sql
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend
+    container_name: backend
+    environment:
+      DB_HOST: mysql
+      DB_USER: spmhtr
+      DB_PASSWORD: spmhtrpwd
+      DB_NAME: spmhtr_database
+    ports:
+      - "5001:80"
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        - REACT_APP_API_URL=http://backend:80
+    container_name: frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge
