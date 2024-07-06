@@ -1,4 +1,4 @@
-# Étape 1 : Utiliser une image officielle de Node.js pour construire l'application
+# Utiliser une image officielle de Node.js pour construire l'application
 FROM node:18 AS build-stage
 
 # Définir le répertoire de travail dans le conteneur
